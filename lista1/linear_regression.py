@@ -11,8 +11,13 @@ class LinearRegr:
         #  Y = np.array, shape = (n)
         # Znajduje theta minimalizujace kwadratowa funkcje kosztu L uzywajac wzoru.
         # Uwaga: przed zastosowaniem wzoru do X nalezy dopisac kolumne zlozona z jedynek.
+
+
+        X = np.hstack((np.ones((X.shape[0], 1)), X))
+        theta = np.linalg.inv(X.T @ X) @ X.T @ Y
+
         n, m = X.shape
-        self.theta = np.zeros((m+1))
+        self.theta = theta
         return self
     
     def predict(self, X):
@@ -20,8 +25,12 @@ class LinearRegr:
         #  X = np.array, shape = (k, m)
         # zwraca
         #  Y = wektor(f(X_1), ..., f(X_k))
+
+        X = np.hstack((np.ones((X.shape[0], 1)), X))
+        Y = X @ self.theta
+
         k, m = X.shape
-        return np.zeros((k))
+        return Y
 
 
 def test_RegressionInOneDim():
@@ -39,5 +48,3 @@ def test_RegressionInThreeDim():
     expected = LinearRegression().fit(X, Y).predict(a)
     actual = LinearRegr().fit(X, Y).predict(a)
     assert list(actual) == pytest.approx(list(expected))
-
-    
