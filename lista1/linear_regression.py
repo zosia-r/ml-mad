@@ -12,11 +12,9 @@ class LinearRegr:
         # Znajduje theta minimalizujace kwadratowa funkcje kosztu L uzywajac wzoru.
         # Uwaga: przed zastosowaniem wzoru do X nalezy dopisac kolumne zlozona z jedynek.
 
-
         X = np.hstack((np.ones((X.shape[0], 1)), X))
-        theta = np.linalg.inv(X.T @ X) @ X.T @ Y
+        theta = np.linalg.pinv(X.T @ X) @ X.T @ Y
 
-        n, m = X.shape
         self.theta = theta
         return self
     
@@ -29,7 +27,6 @@ class LinearRegr:
         X = np.hstack((np.ones((X.shape[0], 1)), X))
         Y = X @ self.theta
 
-        k, m = X.shape
         return Y
 
 

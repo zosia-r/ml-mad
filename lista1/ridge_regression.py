@@ -13,8 +13,14 @@ class RidgeRegr:
         #  X = np.array, shape = (n, m)
         #  Y = np.array, shape = (n)
         # Znajduje theta (w przyblizeniu) minimalizujace kwadratowa funkcje kosztu L uzywajac metody iteracyjnej.
+
+        X = np.hstack((np.ones((X.shape[0], 1)), X))
+        I = np.eye(X.shape[1])
+        I[0, 0] = 0
+        theta = np.linalg.inv(X.T @ X + self.alpha * I) @ X.T @ Y
+
         n, m = X.shape
-        self.theta = np.zeros((m+1))
+        self.theta = theta
         return self
     
     def predict(self, X):
@@ -22,8 +28,12 @@ class RidgeRegr:
         #  X = np.array, shape = (k, m)
         # zwraca
         #  Y = wektor(f(X_1), ..., f(X_k))
+
+        X = np.hstack((np.ones((X.shape[0], 1)), X))
+        Y = X @ self.theta
+
         k, m = X.shape
-        return np.zeros((k))
+        return Y
 
 
 def test_RidgeRegressionInOneDim():
