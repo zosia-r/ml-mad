@@ -18,14 +18,11 @@ class RidgeRegr:
         penalty = np.eye(X.shape[1])
         penalty[0, 0] = 0
         theta = np.zeros(X.shape[1])
-        step = 1.0 / (np.linalg.norm(X, 2) ** 2 + self.alpha)
+        lr = 1.0 / (np.linalg.norm(X, 2) ** 2 + self.alpha)
 
-        for _ in range(10000):
+        for i in range(10000):
             gradient = X.T @ (X @ theta - Y) + self.alpha * penalty @ theta
-            update = step * gradient
-            theta -= update
-            if np.linalg.norm(update) < 1e-10:
-                break
+            theta -= lr * gradient
 
         self.theta = theta
         return self
