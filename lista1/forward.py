@@ -19,20 +19,21 @@ class Dual:
         return Dual(self.real + other.real, self.dual + other.dual)
     
     def __sub__(self, other):
-        # ...
-        pass
-    
+        # (u - v)' = u' - v'
+        return Dual(self.real - other.real, self.dual - other.dual)
+
     def __mul__(self, other):
-        # ...
-        pass
+        # (u * v)' = u' * v + u * v'
+        return Dual(self.real * other.real, self.dual * other.real + self.real * other.dual)
 
     def __truediv__(self, other):
-        # ...
-        pass
+        # (u / v)' = (u' * v - u * v') / v^2
+        return Dual(self.real / other.real,
+                    (self.dual * other.real - self.real * other.dual) / (other.real ** 2))
 
     def __neg__(self):
-        # ...
-        pass
+        # (-u)' = -u'
+        return Dual(-self.real, -self.dual)
 
 def sin(x):
     # Mamy wzor:
@@ -41,20 +42,21 @@ def sin(x):
     return Dual(math.sin(x.real), math.cos(x.real) * x.dual)
 
 def cos(x):
-    # ...
-    pass
+    # (cos(x))' = -sin(x) * x'
+    return Dual(math.cos(x.real), -math.sin(x.real) * x.dual)
 
 def exp(x):
-    # ...
-    pass
+    # (exp(x))' = exp(x) * x'
+    return Dual(math.exp(x.real), math.exp(x.real) * x.dual)
 
-# jeszcze jakas funkcja, np. sqrt, log, itp.
-# def ...(x):
-#   ...
+def sqrt(x):
+    # (sqrt(x))' = x' / (2 * sqrt(x))
+    return Dual(math.sqrt(x.real), x.dual / (2.0 * math.sqrt(x.real)))
 
 def f(x):
     # Jakas wlasna funkcja do narysowania, uzywajaca tych powyzej
-    return Dual(2.0, 0.0) + x   # nudna funkcja, ale po dodaniu implementacji powyzej mozna zmienic
+    # oscylacje (sin + cos(2x)) tlumione dzwonem exp(-x^2 / 30)
+    return (sin(x) + cos(Dual(2.0, 0.0) * x)) * exp(-(x * x) / Dual(30.0, 0.0))
 
 
 if __name__ == "__main__":
@@ -118,6 +120,15 @@ def test_dzielenie():
         assert result.dual == pytest.approx(expected.real, rel=1e-6)
 
 def test_wlasnej_funkcji():
-    # 
-    pass
+    # f(x) = (sin(x) + cos(2x)) * exp(-x^2 / 30)
+    # f'(x) = (cos(x) - 2*sin(2x) - x/15 * (sin(x) + cos(2x))) * exp(-x^2 / 30)
+    def pochodna(x):
+        a = math.sin(x) + math.cos(2 * x)
+        da = math.cos(x) - 2 * math.sin(2 * x)
+        return (da - x / 15 * a) * math.exp(-x * x / 30)
+    x_vals = np.linspace(-10, 10, 400)
+    for x in x_vals:
+        x_dual = Dual(x, dual=1.0)
+        result = f(x_dual)
+        assert result.dual == pytest.approx(pochodna(x), rel=1e-6)
                         
