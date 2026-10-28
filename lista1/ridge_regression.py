@@ -13,6 +13,8 @@ class RidgeRegr:
         #  X = np.array, shape = (n, m)
         #  Y = np.array, shape = (n)
         # Znajduje theta (w przyblizeniu) minimalizujace kwadratowa funkcje kosztu L uzywajac metody iteracyjnej.
+        
+        ITER = 10000
 
         X = np.hstack((np.ones((X.shape[0], 1)), X))
         penalty = np.eye(X.shape[1])
@@ -20,9 +22,11 @@ class RidgeRegr:
         theta = np.zeros(X.shape[1])
         lr = 1.0 / (np.linalg.norm(X, 2) ** 2 + self.alpha)
 
-        for i in range(10000):
+        for i in range(ITER):
             gradient = X.T @ (X @ theta - Y) + self.alpha * penalty @ theta
             theta -= lr * gradient
+            if np.linalg.norm(gradient) < 1e-12:
+                break
 
         self.theta = theta
         return self
