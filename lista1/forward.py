@@ -123,12 +123,9 @@ def test_wlasnej_funkcji():
     # f(x) = (sin(x) + cos(2x)) * exp(-x^2 / 30)
     # f'(x) = (cos(x) - 2*sin(2x) - x/15 * (sin(x) + cos(2x))) * exp(-x^2 / 30)
     def pochodna(x):
-        a = math.sin(x) + math.cos(2 * x)
-        da = math.cos(x) - 2 * math.sin(2 * x)
-        return (da - x / 15 * a) * math.exp(-x * x / 30)
+        return ((math.cos(x) - 2 * math.sin(2 * x)) - x / 15 * (math.sin(x) + math.cos(2 * x))) * math.exp(-x * x / 30)
     x_vals = np.linspace(-10, 10, 400)
     for x in x_vals:
         x_dual = Dual(x, dual=1.0)
         result = f(x_dual)
-        assert result.dual == pytest.approx(pochodna(x), rel=1e-6)
-                        
+        assert result.dual == pytest.approx(pochodna(x), rel=1e-6) 
